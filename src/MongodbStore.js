@@ -23,7 +23,7 @@ const abuseSchema = new mongoose.Schema({
         default: 0,
     },
     dateEnd: {
-        type: Date,
+        type: Number,
         required: true,
     },
 });
@@ -60,7 +60,7 @@ const abuseHistorySchema = new mongoose.Schema({
         required: false,
     },
     dateEnd: {
-        type: Date,
+        type: Number,
         required: true,
     },
     createdAt: {
@@ -105,7 +105,6 @@ class MongodbStore extends Store {
 
     async incr(key, options, weight) {
         await this._removeAll();
-
         const data = await this.Ratelimits.findOrCreate({
             where: { key },
             defaults: {
@@ -115,8 +114,8 @@ class MongodbStore extends Store {
         });
         await this._increment(this.Ratelimits, { key }, weight, 'counter');
         return {
-            counter: data.counter + weight,
-            dateEnd: data.dateEnd,
+            counter: data.value.counter + weight,
+            dateEnd: data.value.dateEnd,
         };
     }
 
